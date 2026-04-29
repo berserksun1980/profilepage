@@ -1,0 +1,2646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Yu Sun - Game Development Leader & Technical Director. 20+ years of expertise in AAA game development.">
+    <meta name="keywords" content="game development, technical director, portfolio, Yu Sun, Ubisoft, NetEase">
+    <meta property="og:title" content="Yu Sun - Game Development Portfolio">
+    <meta property="og:description" content="20+ years of leadership in game development across Ubisoft, NetEase, and Warner Bros.">
+    <meta property="og:type" content="website">
+    <title>Yu Sun - Game Development Leader</title>
+
+    <!-- Three.js for LiquidEther fluid simulation -->
+    <script src="./three.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-dominant-60: #1E272E;
+            --color-secondary-30-text: #F5F6FA;
+            --color-secondary-30-struct: #0984E3;
+            --color-accent-10: #00CEC9;
+            --radius-md: 10px;
+            --focus-ring: 0 0 0 3px rgba(0, 206, 201, 0.35);
+            --shadow-tech: 0 8px 24px rgba(0, 0, 0, 0.35);
+            --transition-quick: 0.2s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--color-dominant-60);
+            color: var(--color-secondary-30-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--color-dominant-60);
+            border-bottom: 1px solid rgba(245, 246, 250, 0.12);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-accent-10);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all var(--transition-quick);
+        }
+
+        .logo:hover {
+            color: var(--color-secondary-30-struct);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--color-secondary-30-text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all var(--transition-quick);
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-accent-10);
+        }
+
+        .nav-cta {
+            padding: 0.75rem 1.5rem;
+            background: var(--color-accent-10);
+            color: var(--color-dominant-60);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-quick);
+            box-shadow: 0 0 0 1px rgba(0, 206, 201, 0.15), 0 4px 12px rgba(0, 206, 201, 0.2);
+        }
+
+        .nav-cta:hover {
+            box-shadow: 0 0 0 1px rgba(0, 206, 201, 0.35), 0 8px 24px rgba(0, 206, 201, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 0;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: calc(100vh - 60px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 3rem;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 206, 201, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%); }
+            50% { transform: translateY(-90px); }
+        }
+
+        .magic-rings-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .magic-rings-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .liquid-ether-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .liquid-ether-bg canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .hero-image {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(0, 206, 201, 0.3);
+            box-shadow: 0 0 0 1px rgba(0, 206, 201, 0.15), 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all var(--transition-quick);
+            object-fit: cover;
+        }
+
+        .hero-image img:hover {
+            border-color: var(--color-accent-10);
+            box-shadow: 0 0 0 2px rgba(0, 206, 201, 0.3), 0 25px 50px rgba(0, 206, 201, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .hero-content {
+            max-width: 700px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .accent {
+            color: var(--color-accent-10);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            color: var(--color-secondary-30-text);
+        }
+
+        .hero-subtitle .accent {
+            color: var(--color-accent-10);
+        }
+
+        .hero-tagline {
+            font-size: 1.1rem;
+            color: var(--color-secondary-30-struct);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: rgba(245, 246, 250, 0.8);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-contact {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-label {
+            font-size: 0.8rem;
+            color: var(--color-secondary-30-struct);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .contact-value {
+            color: var(--color-secondary-30-text);
+            font-weight: 500;
+        }
+
+        .contact-value a {
+            color: var(--color-accent-10);
+            text-decoration: none;
+            transition: all var(--transition-quick);
+        }
+
+        .contact-value a:hover {
+            color: var(--color-secondary-30-struct);
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: 1px solid rgba(245, 246, 250, 0.12);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-quick);
+            text-decoration: none;
+            display: inline-block;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--color-accent-10);
+            color: var(--color-dominant-60);
+            border-color: var(--color-accent-10);
+            box-shadow: var(--shadow-tech);
+        }
+
+        .btn-primary:hover {
+            background: #00B8AD;
+            border-color: #00B8AD;
+            box-shadow: 0 0 0 1px rgba(0, 206, 201, 0.35), 0 12px 32px rgba(0, 206, 201, 0.25);
+            transform: translateY(-3px);
+        }
+
+        /* Section Styles */
+        section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-label {
+            color: var(--color-accent-10);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            letter-spacing: -0.01em;
+        }
+
+        /* About Section */
+        #about {
+            padding-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .about-content p {
+            font-size: 1rem;
+            color: rgba(245, 246, 250, 0.85);
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        /* Experience Section */
+        #experience {
+            padding-top: 2rem;
+            overflow: hidden;
+        }
+
+        .experience-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .experience-item {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 2rem;
+            background: linear-gradient(135deg, rgba(9, 132, 227, 0.05) 0%, rgba(9, 132, 227, 0.02) 100%);
+            border: 1px solid rgba(245, 246, 250, 0.12);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            transition: all var(--transition-quick);
+            cursor: pointer;
+            align-items: start;
+        }
+
+        .experience-item:hover {
+            border-color: var(--color-secondary-30-struct);
+            box-shadow: 0 0 0 1px rgba(0, 206, 201, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .company-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-md);
+            background: #000000;
+            border: 1px solid rgba(0, 206, 201, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--color-accent-10);
+            overflow: hidden;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .exp-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .exp-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .exp-title {
+            color: var(--color-accent-10);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .exp-company {
+            color: var(--color-secondary-30-struct);
+            font-weight: 500;
+        }
+
+        .exp-duration {
+            color: rgba(245, 246, 250, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .exp-description {
+            color: rgba(245, 246, 250, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .exp-description ul {
+            list-style: none;
+            margin-top: 1rem;
+            padding-left: 0;
+        }
+
+        .exp-description li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.75rem;
+            color: rgba(245, 246, 250, 0.75);
+        }
+
+        .exp-description li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--color-accent-10);
+        }
+
+        /* Education Section */
+        .education-item {
+            background: linear-gradient(135deg, rgba(9, 132, 227, 0.05) 0%, rgba(9, 132, 227, 0.02) 100%);
+            border: 1px solid rgba(245, 246, 250, 0.12);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .edu-degree {
+            color: var(--color-accent-10);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .edu-school {
+            color: var(--color-secondary-30-struct);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .edu-year {
+            color: rgba(245, 246, 250, 0.6);
+            font-size: 0.85rem;
+        }
+
+        /* Languages Section */
+        .languages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .language-item {
+            background: linear-gradient(135deg, rgba(0, 206, 201, 0.05) 0%, rgba(0, 206, 201, 0.02) 100%);
+            border: 1px solid rgba(245, 246, 250, 0.12);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+        }
+
+        .lang-name {
+            color: var(--color-secondary-30-text);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .lang-level {
+            color: var(--color-accent-10);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+            border-top: 1px solid rgba(245, 246, 250, 0.12);
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--color-secondary-30-text);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-section a {
+            color: rgba(245, 246, 250, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all var(--transition-quick);
+            cursor: pointer;
+        }
+
+        .footer-section a:hover {
+            color: var(--color-accent-10);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(245, 246, 250, 0.12);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(245, 246, 250, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .experience-item {
+                grid-template-columns: 80px 1fr;
+                gap: 1.5rem;
+            }
+
+            .company-logo {
+                width: 80px;
+                height: 80px;
+                font-size: 0.7rem;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-image {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-links a {
+                display: none;
+            }
+
+            section {
+                padding: 3rem 1rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .exp-header {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-contact {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .experience-item {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .company-logo {
+                width: 100%;
+                max-width: 60px;
+                height: 60px;
+                font-size: 0.65rem;
+            }
+
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .hero-image {
+                max-width: 250px;
+            }
+        }
+
+        /* Circular Gallery */
+        .circular-gallery-container {
+            width: 100%;
+            height: 450px;
+            margin-top: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .circular-gallery {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .circular-gallery:active {
+            cursor: grabbing;
+        }
+
+        .gallery-track {
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+            transition: transform 0.4s ease-out;
+            align-items: center;
+            will-change: transform;
+        }
+
+        .gallery-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.5;
+            transform: scale(0.85);
+            transition: all 0.3s ease;
+            width: 180px;
+        }
+
+        .gallery-item.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid rgba(0, 206, 201, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item.active img {
+            border-color: var(--color-accent-10);
+            box-shadow: 0 0 0 2px rgba(0, 206, 201, 0.3), 0 12px 40px rgba(0, 206, 201, 0.2);
+        }
+
+        .gallery-item-label {
+            color: var(--color-accent-10);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            min-height: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.3;
+        }
+
+        .gallery-item-name {
+            display: block;
+            font-weight: 700;
+        }
+
+        .gallery-item-platform {
+            display: block;
+            font-weight: 400;
+            opacity: 0.7;
+            font-size: 0.65rem;
+        }
+
+        .gallery-item-year {
+            display: block;
+            font-weight: 400;
+            opacity: 0.5;
+            font-size: 0.65rem;
+        }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div id="magic-rings-hero" class="magic-rings-container"></div>
+            <div class="hero-image">
+                <img src="./sunyu_pic.jpg" alt="Yu Sun - Game Development Leader">
+            </div>
+            <div class="hero-content">
+                <h1>Sun Yu</h1>
+                <h2 class="hero-subtitle">Technical Director & <span class="accent">Studio Manager</span></h2>
+                <p class="hero-tagline">20+ years scaling AAA game development: from technical architecture to studio operations and strategic vision</p>
+
+                <div class="hero-contact">
+                    <div class="contact-item">
+                        <div class="contact-label">Location</div>
+                        <div class="contact-value">Montreal, QC</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Phone</div>
+                        <div class="contact-value"><a href="tel:+15146270824">(514) 627-0824</a></div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Email</div>
+                        <div class="contact-value"><a href="mailto:berserk_sun@hotmail.com">berserk_sun@hotmail.com</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <div id="liquid-ether-about" class="liquid-ether-bg"></div>
+            <div class="section-label">Professional Profile</div>
+            <h2 class="section-title">About Me</h2>
+
+            <div class="about-content">
+                    <p>With over 20 years in game development, I bridge technical innovation and strategic business leadership. My career spans level design, AI architecture, production pipelines, and studio operations across Ubisoft, Warner Bros Games, and NetEase. I've shipped 8 AAA titles reaching more than 100 million players on PlayStation, Xbox, PC, and legacy platforms—contributing to flagship franchises including Tom Clancy's Rainbow Six Siege, Splinter Cell, and Ghost Recon.</p>
+                    <p>As Site Manager at NetEase Games Montreal, I drive studio strategy, oversee regional operations, and build high-performing cross-functional teams. My strength lies in translating complex technical challenges into scalable solutions while fostering environments where designers, engineers, and artists do their best work. I combine deep technical expertise—from game engines and content pipelines to streaming architecture—with strategic vision in budgeting, partnerships, and product roadmaps.</p>
+            </div>
+
+            <!-- Circular Gallery -->
+            <div class="circular-gallery-container">
+                <div id="circular-gallery" class="circular-gallery">
+                    <div class="gallery-track" id="gallery-track"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience">
+            <div id="liquid-ether-experience" class="liquid-ether-bg"></div>
+            <div class="section-label">Career History</div>
+            <h2 class="section-title">Work Experience</h2>
+
+            <div class="experience-timeline">
+                <div class="experience-item">
+                    <div class="company-logo">
+                        <img src="./netease_montreal.png" alt="NetEase Games Montréal">
+                    </div>
+                    <div class="exp-content">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-title">Site Manager</div>
+                                <div class="exp-company">NetEase Games (Montréal) Inc., Montreal, QC</div>
+                            </div>
+                            <div class="exp-duration">09/2019 - Present</div>
+                        </div>
+                        <div class="exp-description">
+                            <ul>
+                                <li>Established and led NetEase's Montréal studio from inception, defining the mandate, strategic roadmap, and operational framework aligned with corporate objectives and Western market opportunities</li>
+                                <li>Oversaw full P&L accountability including budget planning, vendor negotiations, and contract execution for studio operations</li>
+                                <li>Built and managed a multidisciplinary team, cultivating a high-performance culture with strong retention and employee satisfaction</li>
+                                <li>Developed and executed regional investment and acquisition strategies to expand the company's presence in the North American market</li>
+                                <li>Established operational policies, workflows, and facility management processes including office leasing, build-outs, and day-to-day operations</li>
+                                <li>Served as the corporate legal representative and authorized signatory for the Montréal entity</li>
+                                <li>Represented the company with government bodies and industry associations, including serving as a Board Member of the Entertainment Software Association of Canada (ESAC)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-logo">
+                        <img src="./netease_logo.png" alt="NetEase">
+                    </div>
+                    <div class="exp-content">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-title">Senior Technical Manager</div>
+                                <div class="exp-company">NetEase Games, Hangzhou, China</div>
+                            </div>
+                            <div class="exp-duration">06/2018 - 09/2019</div>
+                        </div>
+                        <div class="exp-description">
+                            <ul>
+                                <li>Founded and scaled the Technical Design discipline within Thunderfire Technical Group, recruiting, mentoring, and managing a specialized team focused on content-creation tools and production pipelines</li>
+                                <li>Embedded as a core team member on Fragpunk, leading the studio's first adoption of Unreal Engine 4 and establishing best practices for the engine across the group</li>
+                                <li>Architected foundational systems for character control (3C), weapon mechanics, and level design, and built scalable pipelines around these systems to accelerate content production</li>
+                                <li>Delivered custom Technical Design tools and workflows integrated into multiple live projects, measurably improving designer autonomy and iteration speed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-logo">
+                        <img src="./ubisoft_logo.jpeg" alt="Ubisoft">
+                    </div>
+                    <div class="exp-content">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-title">Technical Director of Design</div>
+                                <div class="exp-company">Ubisoft Montreal, Montreal, QC</div>
+                            </div>
+                            <div class="exp-duration">11/2008 - 09/2017</div>
+                        </div>
+                        <div class="exp-description">
+                            <ul>
+                                <li>Served as Technical Director of Design across multiple AAA franchises — Tom Clancy's Rainbow Six Siege, Rainbow Six Patriots, and Splinter Cell Conviction — shipping on PS4, Xbox One, PC, Xbox 360, PS3, Wii, and PSP</li>
+                                <li>Led level and mission design efforts including destructible environments, PvE game modes, training missions, and cinematic single-player sequences</li>
+                                <li>Owned AI and navigation systems: managed collision, NavMesh, and destruction pipelines; prototyped custom AI behaviors and mission systems for open-world multiplayer projects</li>
+                                <li>Designed and developed tools and pipelines including node-based visual scripting systems, NavMesh generation tools in 3ds Max, and universal scripting frameworks for online multiplayer titles</li>
+                                <li>Contributed to over two years of post-launch content for Rainbow Six Siege, delivering 8 seasonal DLCs with new maps, operators, and gadgets alongside continuous pipeline improvements</li>
+                                <li>Designed gameplay systems and mission structures for online co-op and competitive multiplayer titles, with a focus on replayability and emergent player experiences</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-logo">
+                        <img src="./wb-games_logo.jpg" alt="Warner Bros Games">
+                    </div>
+                    <div class="exp-content">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-title">Advanced Technical Designer</div>
+                                <div class="exp-company">Warner Bros Games Montreal, Montreal, QC</div>
+                            </div>
+                            <div class="exp-duration">09/2017 - 06/2018</div>
+                        </div>
+                        <div class="exp-description">
+                            <ul>
+                                <li>Designed and implemented core gameplay systems and technical infrastructure for an unannounced AAA title</li>
+                                <li>Developed advanced content-creation pipelines and tooling to streamline production workflows across the design team</li>
+                                <li>Collaborated closely with engineering and art departments to define technical specifications and resolve cross-discipline dependencies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-logo">
+                        <img src="./Virtuos-Logo.png" alt="Virtuos">
+                    </div>
+                    <div class="exp-content">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-title">Lead Technical Designer</div>
+                                <div class="exp-company">Virtuos LTD, Shanghai, China</div>
+                            </div>
+                            <div class="exp-duration">01/2007 - 08/2008</div>
+                        </div>
+                        <div class="exp-description">
+                            <ul>
+                                <li>Led Technical Design across multiple co-development projects, resolving engine and tooling challenges to ensure on-time delivery for partner studios</li>
+                                <li>Established and optimized cross-project production pipelines, improving asset handoff consistency and reducing integration issues</li>
+                                <li>Evaluated and integrated third-party game engine features to meet project-specific design requirements</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-logo">
+                        <img src="./ubisoft_logo.jpeg" alt="Ubisoft">
+                    </div>
+                    <div class="exp-content">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-title">Level Designer</div>
+                                <div class="exp-company">Ubisoft Shanghai, Shanghai, China</div>
+                            </div>
+                            <div class="exp-duration">06/2004 - 12/2006</div>
+                        </div>
+                        <div class="exp-description">
+                            <ul>
+                                <li>Designed and implemented open-world streaming architectures, optimizing data structures and loading strategies for seamless exploration in large-scale environments</li>
+                                <li>Built custom planning and management tools that streamlined open-world production workflows, improving team efficiency and project scalability</li>
+                                <li>Defined studio-wide asset production standards covering collision, annotation, theming, folder structure, and naming conventions to ensure cross-team consistency</li>
+                                <li>Improved core pipeline processes including automated data validation and build generation, reducing errors and accelerating development cycles</li>
+                                <li>Contributed to layout design, combat implementation, and gameplay scripting across three concurrent titles</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 3rem;">Affiliations</h2>
+            <div class="education-item" style="display: grid; grid-template-columns: 120px 1fr; gap: 1.5rem; align-items: center;">
+                <div style="background: #000000; border-radius: 10px; width: 120px; height: 72px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="./esac_logo.jpeg" alt="ESAC" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                <div>
+                    <div class="edu-degree">ESAC Board Member</div>
+                    <div class="edu-school">Entertainment Software Association of Canada</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact">
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="window.location.href='mailto:berserk_sun@hotmail.com'">Send Email</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+    // LiquidEther - Vanilla JS port from React Bits
+    // Fluid simulation using Three.js with auto-demo and mouse interaction
+    class LiquidEther {
+        constructor(container, props = {}) {
+            this.container = container;
+            this.props = {
+                mouseForce: 20,
+                cursorSize: 100,
+                isViscous: false,
+                viscous: 30,
+                iterationsViscous: 32,
+                iterationsPoisson: 32,
+                dt: 0.014,
+                BFECC: true,
+                resolution: 0.5,
+                isBounce: false,
+                colors: ['#00CEC9', '#0984E3', '#1E272E'],
+                autoDemo: true,
+                autoSpeed: 0.5,
+                autoIntensity: 2.2,
+                takeoverDuration: 0.25,
+                autoResumeDelay: 1000,
+                autoRampDuration: 0.6,
+                ...props
+            };
+            this.raf = null;
+            this.resizeObserver = null;
+            this.intersectionObserver = null;
+            this.isVisible = true;
+            this.resizeRaf = null;
+            this.init();
+        }
+
+        init() {
+            const p = this.props;
+            const container = this.container;
+
+            // --- Palette texture ---
+            function makePaletteTexture(stops) {
+                let arr = (Array.isArray(stops) && stops.length > 0)
+                    ? (stops.length === 1 ? [stops[0], stops[0]] : stops)
+                    : ['#ffffff', '#ffffff'];
+                const w = arr.length;
+                const data = new Uint8Array(w * 4);
+                for (let i = 0; i < w; i++) {
+                    const c = new THREE.Color(arr[i]);
+                    data[i * 4 + 0] = Math.round(c.r * 255);
+                    data[i * 4 + 1] = Math.round(c.g * 255);
+                    data[i * 4 + 2] = Math.round(c.b * 255);
+                    data[i * 4 + 3] = 255;
+                }
+                const tex = new THREE.DataTexture(data, w, 1, THREE.RGBAFormat);
+                tex.magFilter = THREE.LinearFilter;
+                tex.minFilter = THREE.LinearFilter;
+                tex.wrapS = THREE.ClampToEdgeWrapping;
+                tex.wrapT = THREE.ClampToEdgeWrapping;
+                tex.generateMipmaps = false;
+                tex.needsUpdate = true;
+                return tex;
+            }
+
+            const paletteTex = makePaletteTexture(p.colors);
+            const bgVec4 = new THREE.Vector4(0, 0, 0, 0);
+
+            // --- Shaders ---
+            const face_vert = `
+attribute vec3 position;
+uniform vec2 px;
+uniform vec2 boundarySpace;
+varying vec2 uv;
+precision highp float;
+void main(){
+    vec3 pos = position;
+    vec2 scale = 1.0 - boundarySpace * 2.0;
+    pos.xy = pos.xy * scale;
+    uv = vec2(0.5) + (pos.xy) * 0.5;
+    gl_Position = vec4(pos, 1.0);
+}`;
+            const line_vert = `
+attribute vec3 position;
+uniform vec2 px;
+precision highp float;
+varying vec2 uv;
+void main(){
+    vec3 pos = position;
+    uv = 0.5 + pos.xy * 0.5;
+    vec2 n = sign(pos.xy);
+    pos.xy = abs(pos.xy) - px * 1.0;
+    pos.xy *= n;
+    gl_Position = vec4(pos, 1.0);
+}`;
+            const mouse_vert = `
+precision highp float;
+attribute vec3 position;
+attribute vec2 uv;
+uniform vec2 center;
+uniform vec2 scale;
+uniform vec2 px;
+varying vec2 vUv;
+void main(){
+    vec2 pos = position.xy * scale * 2.0 * px + center;
+    vUv = uv;
+    gl_Position = vec4(pos, 0.0, 1.0);
+}`;
+            const advection_frag = `
+precision highp float;
+uniform sampler2D velocity;
+uniform float dt;
+uniform bool isBFECC;
+uniform vec2 fboSize;
+uniform vec2 px;
+varying vec2 uv;
+void main(){
+    vec2 ratio = max(fboSize.x, fboSize.y) / fboSize;
+    if(isBFECC == false){
+        vec2 vel = texture2D(velocity, uv).xy;
+        vec2 uv2 = uv - vel * dt * ratio;
+        vec2 newVel = texture2D(velocity, uv2).xy;
+        gl_FragColor = vec4(newVel, 0.0, 0.0);
+    } else {
+        vec2 spot_new = uv;
+        vec2 vel_old = texture2D(velocity, uv).xy;
+        vec2 spot_old = spot_new - vel_old * dt * ratio;
+        vec2 vel_new1 = texture2D(velocity, spot_old).xy;
+        vec2 spot_new2 = spot_old + vel_new1 * dt * ratio;
+        vec2 error = spot_new2 - spot_new;
+        vec2 spot_new3 = spot_new - error / 2.0;
+        vec2 vel_2 = texture2D(velocity, spot_new3).xy;
+        vec2 spot_old2 = spot_new3 - vel_2 * dt * ratio;
+        vec2 newVel2 = texture2D(velocity, spot_old2).xy;
+        gl_FragColor = vec4(newVel2, 0.0, 0.0);
+    }
+}`;
+            const color_frag = `
+precision highp float;
+uniform sampler2D velocity;
+uniform sampler2D palette;
+uniform vec4 bgColor;
+varying vec2 uv;
+void main(){
+    vec2 vel = texture2D(velocity, uv).xy;
+    float lenv = clamp(length(vel), 0.0, 1.0);
+    vec3 c = texture2D(palette, vec2(lenv, 0.5)).rgb;
+    vec3 outRGB = mix(bgColor.rgb, c, lenv);
+    float outA = mix(bgColor.a, 1.0, lenv);
+    gl_FragColor = vec4(outRGB, outA);
+}`;
+            const divergence_frag = `
+precision highp float;
+uniform sampler2D velocity;
+uniform float dt;
+uniform vec2 px;
+varying vec2 uv;
+void main(){
+    float x0 = texture2D(velocity, uv-vec2(px.x, 0.0)).x;
+    float x1 = texture2D(velocity, uv+vec2(px.x, 0.0)).x;
+    float y0 = texture2D(velocity, uv-vec2(0.0, px.y)).y;
+    float y1 = texture2D(velocity, uv+vec2(0.0, px.y)).y;
+    float divergence = (x1 - x0 + y1 - y0) / 2.0;
+    gl_FragColor = vec4(divergence / dt);
+}`;
+            const externalForce_frag = `
+precision highp float;
+uniform vec2 force;
+uniform vec2 center;
+uniform vec2 scale;
+uniform vec2 px;
+varying vec2 vUv;
+void main(){
+    vec2 circle = (vUv - 0.5) * 2.0;
+    float d = 1.0 - min(length(circle), 1.0);
+    d *= d;
+    gl_FragColor = vec4(force * d, 0.0, 1.0);
+}`;
+            const poisson_frag = `
+precision highp float;
+uniform sampler2D pressure;
+uniform sampler2D divergence;
+uniform vec2 px;
+varying vec2 uv;
+void main(){
+    float p0 = texture2D(pressure, uv + vec2(px.x * 2.0, 0.0)).r;
+    float p1 = texture2D(pressure, uv - vec2(px.x * 2.0, 0.0)).r;
+    float p2 = texture2D(pressure, uv + vec2(0.0, px.y * 2.0)).r;
+    float p3 = texture2D(pressure, uv - vec2(0.0, px.y * 2.0)).r;
+    float div = texture2D(divergence, uv).r;
+    float newP = (p0 + p1 + p2 + p3) / 4.0 - div;
+    gl_FragColor = vec4(newP);
+}`;
+            const pressure_frag = `
+precision highp float;
+uniform sampler2D pressure;
+uniform sampler2D velocity;
+uniform vec2 px;
+uniform float dt;
+varying vec2 uv;
+void main(){
+    float step = 1.0;
+    float p0 = texture2D(pressure, uv + vec2(px.x * step, 0.0)).r;
+    float p1 = texture2D(pressure, uv - vec2(px.x * step, 0.0)).r;
+    float p2 = texture2D(pressure, uv + vec2(0.0, px.y * step)).r;
+    float p3 = texture2D(pressure, uv - vec2(0.0, px.y * step)).r;
+    vec2 v = texture2D(velocity, uv).xy;
+    vec2 gradP = vec2(p0 - p1, p2 - p3) * 0.5;
+    v = v - gradP * dt;
+    gl_FragColor = vec4(v, 0.0, 1.0);
+}`;
+            const viscous_frag = `
+precision highp float;
+uniform sampler2D velocity;
+uniform sampler2D velocity_new;
+uniform float v;
+uniform vec2 px;
+uniform float dt;
+varying vec2 uv;
+void main(){
+    vec2 old = texture2D(velocity, uv).xy;
+    vec2 new0 = texture2D(velocity_new, uv + vec2(px.x * 2.0, 0.0)).xy;
+    vec2 new1 = texture2D(velocity_new, uv - vec2(px.x * 2.0, 0.0)).xy;
+    vec2 new2 = texture2D(velocity_new, uv + vec2(0.0, px.y * 2.0)).xy;
+    vec2 new3 = texture2D(velocity_new, uv - vec2(0.0, px.y * 2.0)).xy;
+    vec2 newv = 4.0 * old + v * dt * (new0 + new1 + new2 + new3);
+    newv /= 4.0 * (1.0 + v * dt);
+    gl_FragColor = vec4(newv, 0.0, 0.0);
+}`;
+
+            // --- Common (renderer, clock, sizing) ---
+            const Common = {
+                width: 0, height: 0, aspect: 1,
+                pixelRatio: 1, fboWidth: null, fboHeight: null,
+                time: 0, delta: 0, container: null, renderer: null, clock: null,
+                init(el) {
+                    this.container = el;
+                    this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+                    this.resize();
+                    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                    this.renderer.autoClear = false;
+                    this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+                    this.renderer.setPixelRatio(this.pixelRatio);
+                    this.renderer.setSize(this.width, this.height);
+                    this.renderer.domElement.style.width = '100%';
+                    this.renderer.domElement.style.height = '100%';
+                    this.renderer.domElement.style.display = 'block';
+                    this.clock = new THREE.Clock();
+                    this.clock.start();
+                },
+                resize() {
+                    if (!this.container) return;
+                    const rect = this.container.getBoundingClientRect();
+                    this.width = Math.max(1, Math.floor(rect.width));
+                    this.height = Math.max(1, Math.floor(rect.height));
+                    this.aspect = this.width / this.height;
+                    if (this.renderer) this.renderer.setSize(this.width, this.height, false);
+                },
+                update() {
+                    this.delta = this.clock.getDelta();
+                    this.time += this.delta;
+                }
+            };
+
+            // --- Mouse ---
+            const Mouse = {
+                mouseMoved: false,
+                coords: new THREE.Vector2(),
+                coords_old: new THREE.Vector2(),
+                diff: new THREE.Vector2(),
+                timer: null,
+                container: null,
+                listenerTarget: null,
+                docTarget: null,
+                isHoverInside: false,
+                hasUserControl: false,
+                isAutoActive: false,
+                autoIntensity: p.autoIntensity,
+                takeoverActive: false,
+                takeoverStartTime: 0,
+                takeoverDuration: p.takeoverDuration,
+                takeoverFrom: new THREE.Vector2(),
+                takeoverTo: new THREE.Vector2(),
+                onInteract: null,
+
+                init(el) {
+                    this.container = el;
+                    this.docTarget = el.ownerDocument || null;
+                    const dv = (this.docTarget && this.docTarget.defaultView) || window;
+                    this.listenerTarget = dv;
+                    this._onMM = this.onMouseMove.bind(this);
+                    this._onTS = this.onTouchStart.bind(this);
+                    this._onTM = this.onTouchMove.bind(this);
+                    this._onTE = this.onTouchEnd.bind(this);
+                    this._onDL = this.onDocLeave.bind(this);
+                    dv.addEventListener('mousemove', this._onMM);
+                    dv.addEventListener('touchstart', this._onTS, { passive: true });
+                    dv.addEventListener('touchmove', this._onTM, { passive: true });
+                    dv.addEventListener('touchend', this._onTE);
+                    if (this.docTarget) this.docTarget.addEventListener('mouseleave', this._onDL);
+                },
+                dispose() {
+                    if (this.listenerTarget) {
+                        this.listenerTarget.removeEventListener('mousemove', this._onMM);
+                        this.listenerTarget.removeEventListener('touchstart', this._onTS);
+                        this.listenerTarget.removeEventListener('touchmove', this._onTM);
+                        this.listenerTarget.removeEventListener('touchend', this._onTE);
+                    }
+                    if (this.docTarget) this.docTarget.removeEventListener('mouseleave', this._onDL);
+                },
+                isPointInside(cx, cy) {
+                    if (!this.container) return false;
+                    const r = this.container.getBoundingClientRect();
+                    if (r.width === 0 || r.height === 0) return false;
+                    return cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom;
+                },
+                updateHoverState(cx, cy) {
+                    this.isHoverInside = this.isPointInside(cx, cy);
+                    return this.isHoverInside;
+                },
+                setCoords(x, y) {
+                    if (!this.container) return;
+                    if (this.timer) clearTimeout(this.timer);
+                    const r = this.container.getBoundingClientRect();
+                    if (r.width === 0 || r.height === 0) return;
+                    const nx = (x - r.left) / r.width;
+                    const ny = (y - r.top) / r.height;
+                    this.coords.set(nx * 2 - 1, -(ny * 2 - 1));
+                    this.mouseMoved = true;
+                    this.timer = setTimeout(() => { this.mouseMoved = false; }, 100);
+                },
+                setNormalized(nx, ny) {
+                    this.coords.set(nx, ny);
+                    this.mouseMoved = true;
+                },
+                onMouseMove(e) {
+                    if (!this.updateHoverState(e.clientX, e.clientY)) return;
+                    if (this.onInteract) this.onInteract();
+                    if (this.isAutoActive && !this.hasUserControl && !this.takeoverActive) {
+                        if (!this.container) return;
+                        const r = this.container.getBoundingClientRect();
+                        if (r.width === 0 || r.height === 0) return;
+                        const nx = (e.clientX - r.left) / r.width;
+                        const ny = (e.clientY - r.top) / r.height;
+                        this.takeoverFrom.copy(this.coords);
+                        this.takeoverTo.set(nx * 2 - 1, -(ny * 2 - 1));
+                        this.takeoverStartTime = performance.now();
+                        this.takeoverActive = true;
+                        this.hasUserControl = true;
+                        this.isAutoActive = false;
+                        return;
+                    }
+                    this.setCoords(e.clientX, e.clientY);
+                    this.hasUserControl = true;
+                },
+                onTouchStart(e) {
+                    if (e.touches.length !== 1) return;
+                    const t = e.touches[0];
+                    if (!this.updateHoverState(t.clientX, t.clientY)) return;
+                    if (this.onInteract) this.onInteract();
+                    this.setCoords(t.clientX, t.clientY);
+                    this.hasUserControl = true;
+                },
+                onTouchMove(e) {
+                    if (e.touches.length !== 1) return;
+                    const t = e.touches[0];
+                    if (!this.updateHoverState(t.clientX, t.clientY)) return;
+                    if (this.onInteract) this.onInteract();
+                    this.setCoords(t.clientX, t.clientY);
+                },
+                onTouchEnd() { this.isHoverInside = false; },
+                onDocLeave() { this.isHoverInside = false; },
+                update() {
+                    if (this.takeoverActive) {
+                        const t = (performance.now() - this.takeoverStartTime) / (this.takeoverDuration * 1000);
+                        if (t >= 1) {
+                            this.takeoverActive = false;
+                            this.coords.copy(this.takeoverTo);
+                            this.coords_old.copy(this.coords);
+                            this.diff.set(0, 0);
+                        } else {
+                            const k = t * t * (3 - 2 * t);
+                            this.coords.copy(this.takeoverFrom).lerp(this.takeoverTo, k);
+                        }
+                    }
+                    this.diff.subVectors(this.coords, this.coords_old);
+                    this.coords_old.copy(this.coords);
+                    if (this.coords_old.x === 0 && this.coords_old.y === 0) this.diff.set(0, 0);
+                    if (this.isAutoActive && !this.takeoverActive) this.diff.multiplyScalar(this.autoIntensity);
+                }
+            };
+
+            // --- AutoDriver ---
+            class AutoDriver {
+                constructor(mouse, manager, opts) {
+                    this.mouse = mouse;
+                    this.manager = manager;
+                    this.enabled = opts.enabled;
+                    this.speed = opts.speed;
+                    this.resumeDelay = opts.resumeDelay || 3000;
+                    this.rampDurationMs = (opts.rampDuration || 0) * 1000;
+                    this.active = false;
+                    this.current = new THREE.Vector2(0, 0);
+                    this.target = new THREE.Vector2();
+                    this.lastTime = performance.now();
+                    this.activationTime = 0;
+                    this.margin = 0.2;
+                    this._tmpDir = new THREE.Vector2();
+                    this.pickNewTarget();
+                }
+                pickNewTarget() {
+                    this.target.set(
+                        (Math.random() * 2 - 1) * (1 - this.margin),
+                        (Math.random() * 2 - 1) * (1 - this.margin)
+                    );
+                }
+                forceStop() {
+                    this.active = false;
+                    this.mouse.isAutoActive = false;
+                }
+                update() {
+                    if (!this.enabled) return;
+                    const now = performance.now();
+                    const idle = now - this.manager.lastUserInteraction;
+                    if (idle < this.resumeDelay) { if (this.active) this.forceStop(); return; }
+                    if (this.mouse.isHoverInside) { if (this.active) this.forceStop(); return; }
+                    if (!this.active) {
+                        this.active = true;
+                        this.current.copy(this.mouse.coords);
+                        this.lastTime = now;
+                        this.activationTime = now;
+                    }
+                    if (!this.active) return;
+                    this.mouse.isAutoActive = true;
+                    let dtSec = (now - this.lastTime) / 1000;
+                    this.lastTime = now;
+                    if (dtSec > 0.2) dtSec = 0.016;
+                    const dir = this._tmpDir.subVectors(this.target, this.current);
+                    const dist = dir.length();
+                    if (dist < 0.01) { this.pickNewTarget(); return; }
+                    dir.normalize();
+                    let ramp = 1;
+                    if (this.rampDurationMs > 0) {
+                        const t = Math.min(1, (now - this.activationTime) / this.rampDurationMs);
+                        ramp = t * t * (3 - 2 * t);
+                    }
+                    const step = this.speed * dtSec * ramp;
+                    const move = Math.min(step, dist);
+                    this.current.addScaledVector(dir, move);
+                    this.mouse.setNormalized(this.current.x, this.current.y);
+                }
+            }
+
+            // --- ShaderPass ---
+            class ShaderPass {
+                constructor(props) {
+                    this.props = props || {};
+                    this.uniforms = this.props.material?.uniforms;
+                    this.scene = null;
+                    this.camera = null;
+                    this.material = null;
+                    this.geometry = null;
+                    this.plane = null;
+                }
+                init() {
+                    this.scene = new THREE.Scene();
+                    this.camera = new THREE.Camera();
+                    if (this.uniforms) {
+                        this.material = new THREE.RawShaderMaterial(this.props.material);
+                        this.geometry = new THREE.PlaneGeometry(2.0, 2.0);
+                        this.plane = new THREE.Mesh(this.geometry, this.material);
+                        this.scene.add(this.plane);
+                    }
+                }
+                update() {
+                    Common.renderer.setRenderTarget(this.props.output || null);
+                    Common.renderer.render(this.scene, this.camera);
+                    Common.renderer.setRenderTarget(null);
+                }
+            }
+
+            // --- Advection ---
+            class Advection extends ShaderPass {
+                constructor(simProps) {
+                    super({
+                        material: {
+                            vertexShader: face_vert,
+                            fragmentShader: advection_frag,
+                            uniforms: {
+                                boundarySpace: { value: simProps.cellScale },
+                                px: { value: simProps.cellScale },
+                                fboSize: { value: simProps.fboSize },
+                                velocity: { value: simProps.src.texture },
+                                dt: { value: simProps.dt },
+                                isBFECC: { value: true }
+                            }
+                        },
+                        output: simProps.dst
+                    });
+                    this.uniforms = this.props.material.uniforms;
+                    this.init();
+                }
+                init() {
+                    super.init();
+                    const boundaryG = new THREE.BufferGeometry();
+                    const verts = new Float32Array([
+                        -1,-1,0, -1,1,0, -1,1,0, 1,1,0, 1,1,0, 1,-1,0, 1,-1,0, -1,-1,0
+                    ]);
+                    boundaryG.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+                    const boundaryM = new THREE.RawShaderMaterial({
+                        vertexShader: line_vert,
+                        fragmentShader: advection_frag,
+                        uniforms: this.uniforms
+                    });
+                    this.line = new THREE.LineSegments(boundaryG, boundaryM);
+                    this.scene.add(this.line);
+                }
+                update(opts) {
+                    this.uniforms.dt.value = opts.dt;
+                    this.line.visible = opts.isBounce;
+                    this.uniforms.isBFECC.value = opts.BFECC;
+                    super.update();
+                }
+            }
+
+            // --- ExternalForce ---
+            class ExternalForce extends ShaderPass {
+                constructor(simProps) {
+                    super({ output: simProps.dst });
+                    this.initForce(simProps);
+                }
+                initForce(simProps) {
+                    super.init();
+                    const mouseG = new THREE.PlaneGeometry(1, 1);
+                    const mouseM = new THREE.RawShaderMaterial({
+                        vertexShader: mouse_vert,
+                        fragmentShader: externalForce_frag,
+                        blending: THREE.AdditiveBlending,
+                        depthWrite: false,
+                        uniforms: {
+                            px: { value: simProps.cellScale },
+                            force: { value: new THREE.Vector2(0.0, 0.0) },
+                            center: { value: new THREE.Vector2(0.0, 0.0) },
+                            scale: { value: new THREE.Vector2(simProps.cursor_size, simProps.cursor_size) }
+                        }
+                    });
+                    this.mouse = new THREE.Mesh(mouseG, mouseM);
+                    this.scene.add(this.mouse);
+                }
+                update(opts) {
+                    const forceX = (Mouse.diff.x / 2) * opts.mouse_force;
+                    const forceY = (Mouse.diff.y / 2) * opts.mouse_force;
+                    const csX = opts.cursor_size * opts.cellScale.x;
+                    const csY = opts.cursor_size * opts.cellScale.y;
+                    const centerX = Math.min(Math.max(Mouse.coords.x, -1 + csX + opts.cellScale.x * 2), 1 - csX - opts.cellScale.x * 2);
+                    const centerY = Math.min(Math.max(Mouse.coords.y, -1 + csY + opts.cellScale.y * 2), 1 - csY - opts.cellScale.y * 2);
+                    const u = this.mouse.material.uniforms;
+                    u.force.value.set(forceX, forceY);
+                    u.center.value.set(centerX, centerY);
+                    u.scale.value.set(opts.cursor_size, opts.cursor_size);
+                    super.update();
+                }
+            }
+
+            // --- Viscous ---
+            class ViscousPass extends ShaderPass {
+                constructor(simProps) {
+                    super({
+                        material: {
+                            vertexShader: face_vert,
+                            fragmentShader: viscous_frag,
+                            uniforms: {
+                                boundarySpace: { value: simProps.boundarySpace },
+                                velocity: { value: simProps.src.texture },
+                                velocity_new: { value: simProps.dst_.texture },
+                                v: { value: simProps.viscous },
+                                px: { value: simProps.cellScale },
+                                dt: { value: simProps.dt }
+                            }
+                        },
+                        output: simProps.dst,
+                        output0: simProps.dst_,
+                        output1: simProps.dst
+                    });
+                    this.init();
+                }
+                update(opts) {
+                    let fbo_in, fbo_out;
+                    this.uniforms.v.value = opts.viscous;
+                    for (let i = 0; i < opts.iterations; i++) {
+                        if (i % 2 === 0) { fbo_in = this.props.output0; fbo_out = this.props.output1; }
+                        else { fbo_in = this.props.output1; fbo_out = this.props.output0; }
+                        this.uniforms.velocity_new.value = fbo_in.texture;
+                        this.props.output = fbo_out;
+                        this.uniforms.dt.value = opts.dt;
+                        super.update();
+                    }
+                    return fbo_out;
+                }
+            }
+
+            // --- Divergence ---
+            class Divergence extends ShaderPass {
+                constructor(simProps) {
+                    super({
+                        material: {
+                            vertexShader: face_vert,
+                            fragmentShader: divergence_frag,
+                            uniforms: {
+                                boundarySpace: { value: simProps.boundarySpace },
+                                velocity: { value: simProps.src.texture },
+                                px: { value: simProps.cellScale },
+                                dt: { value: simProps.dt }
+                            }
+                        },
+                        output: simProps.dst
+                    });
+                    this.init();
+                }
+                update(opts) {
+                    this.uniforms.velocity.value = opts.vel.texture;
+                    super.update();
+                }
+            }
+
+            // --- Poisson ---
+            class Poisson extends ShaderPass {
+                constructor(simProps) {
+                    super({
+                        material: {
+                            vertexShader: face_vert,
+                            fragmentShader: poisson_frag,
+                            uniforms: {
+                                boundarySpace: { value: simProps.boundarySpace },
+                                pressure: { value: simProps.dst_.texture },
+                                divergence: { value: simProps.src.texture },
+                                px: { value: simProps.cellScale }
+                            }
+                        },
+                        output: simProps.dst,
+                        output0: simProps.dst_,
+                        output1: simProps.dst
+                    });
+                    this.init();
+                }
+                update(opts) {
+                    let p_in, p_out;
+                    for (let i = 0; i < opts.iterations; i++) {
+                        if (i % 2 === 0) { p_in = this.props.output0; p_out = this.props.output1; }
+                        else { p_in = this.props.output1; p_out = this.props.output0; }
+                        this.uniforms.pressure.value = p_in.texture;
+                        this.props.output = p_out;
+                        super.update();
+                    }
+                    return p_out;
+                }
+            }
+
+            // --- Pressure ---
+            class PressurePass extends ShaderPass {
+                constructor(simProps) {
+                    super({
+                        material: {
+                            vertexShader: face_vert,
+                            fragmentShader: pressure_frag,
+                            uniforms: {
+                                boundarySpace: { value: simProps.boundarySpace },
+                                pressure: { value: simProps.src_p.texture },
+                                velocity: { value: simProps.src_v.texture },
+                                px: { value: simProps.cellScale },
+                                dt: { value: simProps.dt }
+                            }
+                        },
+                        output: simProps.dst
+                    });
+                    this.init();
+                }
+                update(opts) {
+                    this.uniforms.velocity.value = opts.vel.texture;
+                    this.uniforms.pressure.value = opts.pressure.texture;
+                    super.update();
+                }
+            }
+
+            // --- Simulation ---
+            class Simulation {
+                constructor(options) {
+                    this.options = {
+                        iterations_poisson: 32, iterations_viscous: 32,
+                        mouse_force: 20, resolution: 0.5, cursor_size: 100,
+                        viscous: 30, isBounce: false, dt: 0.014,
+                        isViscous: false, BFECC: true, ...options
+                    };
+                    this.fbos = { vel_0: null, vel_1: null, vel_viscous0: null, vel_viscous1: null, div: null, pressure_0: null, pressure_1: null };
+                    this.fboSize = new THREE.Vector2();
+                    this.cellScale = new THREE.Vector2();
+                    this.boundarySpace = new THREE.Vector2();
+                    this.simInit();
+                }
+                simInit() {
+                    this.calcSize();
+                    this.createAllFBO();
+                    this.createShaderPass();
+                }
+                getFloatType() {
+                    const isIOS = /(iPad|iPhone|iPod)/i.test(navigator.userAgent);
+                    return isIOS ? THREE.HalfFloatType : THREE.FloatType;
+                }
+                createAllFBO() {
+                    const type = this.getFloatType();
+                    const opts = {
+                        type, depthBuffer: false, stencilBuffer: false,
+                        minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+                        wrapS: THREE.ClampToEdgeWrapping, wrapT: THREE.ClampToEdgeWrapping
+                    };
+                    for (let key in this.fbos) {
+                        this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+                    }
+                }
+                createShaderPass() {
+                    this.advection = new Advection({
+                        cellScale: this.cellScale, fboSize: this.fboSize,
+                        dt: this.options.dt, src: this.fbos.vel_0, dst: this.fbos.vel_1
+                    });
+                    this.externalForce = new ExternalForce({
+                        cellScale: this.cellScale, cursor_size: this.options.cursor_size, dst: this.fbos.vel_1
+                    });
+                    this.viscousPass = new ViscousPass({
+                        cellScale: this.cellScale, boundarySpace: this.boundarySpace,
+                        viscous: this.options.viscous, src: this.fbos.vel_1,
+                        dst: this.fbos.vel_viscous1, dst_: this.fbos.vel_viscous0, dt: this.options.dt
+                    });
+                    this.divergence = new Divergence({
+                        cellScale: this.cellScale, boundarySpace: this.boundarySpace,
+                        src: this.fbos.vel_viscous0, dst: this.fbos.div, dt: this.options.dt
+                    });
+                    this.poisson = new Poisson({
+                        cellScale: this.cellScale, boundarySpace: this.boundarySpace,
+                        src: this.fbos.div, dst: this.fbos.pressure_1, dst_: this.fbos.pressure_0
+                    });
+                    this.pressurePass = new PressurePass({
+                        cellScale: this.cellScale, boundarySpace: this.boundarySpace,
+                        src_p: this.fbos.pressure_0, src_v: this.fbos.vel_viscous0,
+                        dst: this.fbos.vel_0, dt: this.options.dt
+                    });
+                }
+                calcSize() {
+                    const w = Math.max(1, Math.round(this.options.resolution * Common.width));
+                    const h = Math.max(1, Math.round(this.options.resolution * Common.height));
+                    this.cellScale.set(1 / w, 1 / h);
+                    this.fboSize.set(w, h);
+                }
+                resize() {
+                    this.calcSize();
+                    for (let key in this.fbos) this.fbos[key].setSize(this.fboSize.x, this.fboSize.y);
+                }
+                update() {
+                    if (this.options.isBounce) this.boundarySpace.set(0, 0);
+                    else this.boundarySpace.copy(this.cellScale);
+                    this.advection.update({ dt: this.options.dt, isBounce: this.options.isBounce, BFECC: this.options.BFECC });
+                    this.externalForce.update({ cursor_size: this.options.cursor_size, mouse_force: this.options.mouse_force, cellScale: this.cellScale });
+                    let vel = this.fbos.vel_1;
+                    if (this.options.isViscous) {
+                        vel = this.viscousPass.update({ viscous: this.options.viscous, iterations: this.options.iterations_viscous, dt: this.options.dt });
+                    }
+                    this.divergence.update({ vel });
+                    const pressure = this.poisson.update({ iterations: this.options.iterations_poisson });
+                    this.pressurePass.update({ vel, pressure });
+                }
+            }
+
+            // --- Output ---
+            class OutputPass {
+                constructor() {
+                    this.simulation = new Simulation({
+                        iterations_poisson: p.iterationsPoisson,
+                        iterations_viscous: p.iterationsViscous,
+                        mouse_force: p.mouseForce,
+                        resolution: p.resolution,
+                        cursor_size: p.cursorSize,
+                        viscous: p.viscous,
+                        isBounce: p.isBounce,
+                        dt: p.dt,
+                        isViscous: p.isViscous,
+                        BFECC: p.BFECC
+                    });
+                    this.scene = new THREE.Scene();
+                    this.camera = new THREE.Camera();
+                    this.output = new THREE.Mesh(
+                        new THREE.PlaneGeometry(2, 2),
+                        new THREE.RawShaderMaterial({
+                            vertexShader: face_vert,
+                            fragmentShader: color_frag,
+                            transparent: true,
+                            depthWrite: false,
+                            uniforms: {
+                                velocity: { value: this.simulation.fbos.vel_0.texture },
+                                boundarySpace: { value: new THREE.Vector2() },
+                                palette: { value: paletteTex },
+                                bgColor: { value: bgVec4 }
+                            }
+                        })
+                    );
+                    this.scene.add(this.output);
+                }
+                resize() { this.simulation.resize(); }
+                render() {
+                    Common.renderer.setRenderTarget(null);
+                    Common.renderer.render(this.scene, this.camera);
+                }
+                update() {
+                    this.simulation.update();
+                    this.render();
+                }
+            }
+
+            // --- Initialize ---
+            Common.init(container);
+            Mouse.init(container);
+
+            const self = this;
+            self.lastUserInteraction = performance.now();
+            Mouse.onInteract = () => {
+                self.lastUserInteraction = performance.now();
+                if (self.autoDriver) self.autoDriver.forceStop();
+            };
+
+            self.autoDriver = new AutoDriver(Mouse, self, {
+                enabled: p.autoDemo,
+                speed: p.autoSpeed,
+                resumeDelay: p.autoResumeDelay,
+                rampDuration: p.autoRampDuration
+            });
+
+            container.prepend(Common.renderer.domElement);
+            const output = new OutputPass();
+
+            self._Common = Common;
+            self._Mouse = Mouse;
+            self._output = output;
+            self._running = false;
+
+            const loop = () => {
+                if (!self._running) return;
+                if (self.autoDriver) self.autoDriver.update();
+                Mouse.update();
+                Common.update();
+                output.update();
+                self.raf = requestAnimationFrame(loop);
+            };
+
+            self.start = () => { if (self._running) return; self._running = true; self._hasStarted = true; loop(); };
+            self.pause = () => {
+                self._running = false;
+                if (self.raf) { cancelAnimationFrame(self.raf); self.raf = null; }
+            };
+
+            // Resize observer
+            self.resizeObserver = new ResizeObserver(() => {
+                if (self.resizeRaf) cancelAnimationFrame(self.resizeRaf);
+                self.resizeRaf = requestAnimationFrame(() => {
+                    Common.resize();
+                    output.resize();
+                });
+            });
+            self.resizeObserver.observe(container);
+
+            // Intersection observer — pause when off screen
+            // Observe the parent section (not the absolute-positioned bg container)
+            const parentSection = container.closest('section') || container;
+            self.intersectionObserver = new IntersectionObserver(entries => {
+                const entry = entries[0];
+                const vis = entry.isIntersecting && entry.intersectionRatio > 0;
+                self.isVisible = vis;
+                // Only pause, never prevent initial start
+                if (vis && !document.hidden) self.start();
+                else if (self._hasStarted) self.pause();
+            }, { threshold: [0, 0.01, 0.1] });
+            self.intersectionObserver.observe(parentSection);
+
+            // Visibility change
+            self._onVis = () => {
+                if (document.hidden) self.pause();
+                else if (self.isVisible) self.start();
+            };
+            document.addEventListener('visibilitychange', self._onVis);
+
+            self.start();
+        }
+
+        dispose() {
+            if (this.raf) cancelAnimationFrame(this.raf);
+            if (this.resizeObserver) this.resizeObserver.disconnect();
+            if (this.intersectionObserver) this.intersectionObserver.disconnect();
+            document.removeEventListener('visibilitychange', this._onVis);
+            if (this._Mouse) this._Mouse.dispose();
+            if (this._Common && this._Common.renderer) {
+                const canvas = this._Common.renderer.domElement;
+                if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+                this._Common.renderer.dispose();
+                this._Common.renderer.forceContextLoss();
+            }
+        }
+    }
+
+    // Init LiquidEther on both sections
+    function initLiquidEther() {
+        const aboutEl = document.getElementById('liquid-ether-about');
+        const expEl = document.getElementById('liquid-ether-experience');
+        const sharedProps = {
+            colors: ['#00CEC9', '#0984E3', '#1E272E'],
+            mouseForce: 20,
+            cursorSize: 100,
+            resolution: 0.5,
+            autoDemo: false,
+            autoSpeed: 0.5,
+            autoIntensity: 2.2,
+            isViscous: true,
+            viscous: 30,
+            iterationsViscous: 32,
+            iterationsPoisson: 32,
+            isBounce: false
+        };
+        if (aboutEl) new LiquidEther(aboutEl, sharedProps);
+        if (expEl) new LiquidEther(expEl, sharedProps);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLiquidEther);
+    } else {
+        initLiquidEther();
+    }
+    </script>
+
+    <script>
+        // Prism Component - Vanilla JavaScript port from React Bits
+        class Prism {
+            constructor(container, props = {}) {
+                this.container = container;
+                this.props = {
+                    height: 3.5,
+                    baseWidth: 5.5,
+                    animationType: 'rotate',
+                    glow: 0.4,
+                    offset: { x: 0, y: 0 },
+                    noise: 0.0,
+                    transparent: true,
+                    scale: 2.4,
+                    hueShift: 0,
+                    colorFrequency: 1,
+                    hoverStrength: 2,
+                    inertia: 0.05,
+                    bloom: 0.5,
+                    suspendWhenOffscreen: false,
+                    timeScale: 0.5,
+                    ...props
+                };
+                this.raf = 0;
+                this.init();
+            }
+
+            init() {
+                const p = this.props;
+                const container = this.container;
+
+                const H = Math.max(0.001, p.height);
+                const BW = Math.max(0.001, p.baseWidth);
+                const BASE_HALF = BW * 0.5;
+                const GLOW = Math.max(0.0, p.glow);
+                const NOISE = Math.max(0.0, p.noise);
+                const offX = p.offset?.x ?? 0;
+                const offY = p.offset?.y ?? 0;
+                const SAT = p.transparent ? 1.5 : 1;
+                const SCALE = Math.max(0.001, p.scale);
+                const HUE = p.hueShift || 0;
+                const CFREQ = Math.max(0.0, p.colorFrequency || 1);
+                const BLOOM = Math.max(0.0, p.bloom || 1);
+                const RSX = 1, RSY = 1, RSZ = 1;
+                const TS = Math.max(0, p.timeScale || 1);
+                const HOVSTR = Math.max(0, p.hoverStrength || 1);
+                const INERT = Math.max(0, Math.min(1, p.inertia || 0.12));
+
+                const { Renderer, Triangle, Program, Mesh } = Prism._webgl();
+
+                const dpr = Math.min(2, window.devicePixelRatio || 1);
+                const renderer = new Renderer({ dpr, alpha: p.transparent, antialias: false });
+                this.renderer = renderer;
+                const gl = renderer.gl;
+                gl.disable(gl.DEPTH_TEST);
+                gl.disable(gl.CULL_FACE);
+                gl.disable(gl.BLEND);
+
+                Object.assign(gl.canvas.style, {
+                    position: 'absolute',
+                    inset: '0',
+                    width: '100%',
+                    height: '100%',
+                    display: 'block'
+                });
+                container.appendChild(gl.canvas);
+
+                const vertex = `
+                    attribute vec2 position;
+                    void main() {
+                        gl_Position = vec4(position, 0.0, 1.0);
+                    }
+                `;
+
+                const fragment = `
+                    precision highp float;
+
+                    uniform vec2  iResolution;
+                    uniform float iTime;
+
+                    uniform float uHeight;
+                    uniform float uBaseHalf;
+                    uniform mat3  uRot;
+                    uniform int   uUseBaseWobble;
+                    uniform float uGlow;
+                    uniform vec2  uOffsetPx;
+                    uniform float uNoise;
+                    uniform float uSaturation;
+                    uniform float uScale;
+                    uniform float uHueShift;
+                    uniform float uColorFreq;
+                    uniform float uBloom;
+                    uniform float uCenterShift;
+                    uniform float uInvBaseHalf;
+                    uniform float uInvHeight;
+                    uniform float uMinAxis;
+                    uniform float uPxScale;
+                    uniform float uTimeScale;
+
+                    vec4 tanh4(vec4 x){
+                        vec4 e2x = exp(2.0*x);
+                        return (e2x - 1.0) / (e2x + 1.0);
+                    }
+
+                    float rand(vec2 co){
+                        return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453123);
+                    }
+
+                    float sdOctaAnisoInv(vec3 p){
+                        vec3 q = vec3(abs(p.x) * uInvBaseHalf, abs(p.y) * uInvHeight, abs(p.z) * uInvBaseHalf);
+                        float m = q.x + q.y + q.z - 1.0;
+                        return m * uMinAxis * 0.5773502691896258;
+                    }
+
+                    float sdPyramidUpInv(vec3 p){
+                        float oct = sdOctaAnisoInv(p);
+                        float halfSpace = -p.y;
+                        return max(oct, halfSpace);
+                    }
+
+                    mat3 hueRotation(float a){
+                        float c = cos(a), s = sin(a);
+                        mat3 W = mat3(
+                            0.299, 0.587, 0.114,
+                            0.299, 0.587, 0.114,
+                            0.299, 0.587, 0.114
+                        );
+                        mat3 U = mat3(
+                             0.701, -0.587, -0.114,
+                            -0.299,  0.413, -0.114,
+                            -0.300, -0.588,  0.886
+                        );
+                        mat3 V = mat3(
+                             0.168, -0.331,  0.500,
+                             0.328,  0.035, -0.500,
+                            -0.497,  0.296,  0.201
+                        );
+                        return W + U * c + V * s;
+                    }
+
+                    void main(){
+                        vec2 f = (gl_FragCoord.xy - 0.5 * iResolution.xy - uOffsetPx) * uPxScale;
+
+                        float z = 5.0;
+                        float d = 0.0;
+
+                        vec3 p;
+                        vec4 o = vec4(0.0);
+
+                        float centerShift = uCenterShift;
+                        float cf = uColorFreq;
+
+                        mat2 wob = mat2(1.0);
+                        if (uUseBaseWobble == 1) {
+                            float t = iTime * uTimeScale;
+                            float c0 = cos(t + 0.0);
+                            float c1 = cos(t + 33.0);
+                            float c2 = cos(t + 11.0);
+                            wob = mat2(c0, c1, c2, c0);
+                        }
+
+                        const int STEPS = 100;
+                        for (int i = 0; i < STEPS; i++) {
+                            p = vec3(f, z);
+                            p.xz = p.xz * wob;
+                            p = uRot * p;
+                            vec3 q = p;
+                            q.y += centerShift;
+                            d = 0.1 + 0.2 * abs(sdPyramidUpInv(q));
+                            z -= d;
+                            o += (sin((p.y + z) * cf + vec4(0.0, 1.0, 2.0, 3.0)) + 1.0) / d;
+                        }
+
+                        o = tanh4(o * o * (uGlow * uBloom) / 1e5);
+
+                        vec3 col = o.rgb;
+                        float brightness = dot(col, vec3(0.299, 0.587, 0.114));
+                        float n = rand(gl_FragCoord.xy + vec2(iTime));
+                        col += (n - 0.5) * uNoise * brightness;
+                        col = clamp(col, 0.0, 1.0);
+
+                        float L = dot(col, vec3(0.2126, 0.7152, 0.0722));
+                        col = clamp(mix(vec3(L), col, uSaturation), 0.0, 1.0);
+
+                        if(abs(uHueShift) > 0.0001){
+                            col = clamp(hueRotation(uHueShift) * col, 0.0, 1.0);
+                        }
+
+                        gl_FragColor = vec4(col, o.a);
+                    }
+                `;
+
+                const geometry = new Triangle(gl);
+                const iResBuf = new Float32Array(2);
+                const offsetPxBuf = new Float32Array(2);
+
+                const program = new Program(gl, {
+                    vertex,
+                    fragment,
+                    uniforms: {
+                        iResolution: { value: iResBuf },
+                        iTime: { value: 0 },
+                        uHeight: { value: H },
+                        uBaseHalf: { value: BASE_HALF },
+                        uUseBaseWobble: { value: 1 },
+                        uRot: { value: new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]) },
+                        uGlow: { value: GLOW },
+                        uOffsetPx: { value: offsetPxBuf },
+                        uNoise: { value: NOISE },
+                        uSaturation: { value: SAT },
+                        uScale: { value: SCALE },
+                        uHueShift: { value: HUE },
+                        uColorFreq: { value: CFREQ },
+                        uBloom: { value: BLOOM },
+                        uCenterShift: { value: H * 0.25 },
+                        uInvBaseHalf: { value: 1 / BASE_HALF },
+                        uInvHeight: { value: 1 / H },
+                        uMinAxis: { value: Math.min(BASE_HALF, H) },
+                        uPxScale: { value: 1 / ((gl.drawingBufferHeight || 1) * 0.1 * SCALE) },
+                        uTimeScale: { value: TS }
+                    }
+                });
+                this.program = program;
+                const mesh = new Mesh(gl, { geometry, program });
+
+                const resize = () => {
+                    const w = container.clientWidth || 1;
+                    const h = container.clientHeight || 1;
+                    renderer.setSize(w, h);
+                    iResBuf[0] = gl.drawingBufferWidth;
+                    iResBuf[1] = gl.drawingBufferHeight;
+                    offsetPxBuf[0] = offX * dpr;
+                    offsetPxBuf[1] = offY * dpr;
+                    program.uniforms.uPxScale.value = 1 / ((gl.drawingBufferHeight || 1) * 0.1 * SCALE);
+                };
+                this.ro = new ResizeObserver(resize);
+                this.ro.observe(container);
+                resize();
+
+                const rotBuf = new Float32Array(9);
+                const setMat3FromEuler = (yawY, pitchX, rollZ, out) => {
+                    const cy = Math.cos(yawY), sy = Math.sin(yawY);
+                    const cx = Math.cos(pitchX), sx = Math.sin(pitchX);
+                    const cz = Math.cos(rollZ), sz = Math.sin(rollZ);
+                    out[0] = cy * cz + sy * sx * sz;
+                    out[1] = -cy * sz + sy * sx * cz;
+                    out[2] = sy * cx;
+                    out[3] = cx * sz;
+                    out[4] = cx * cz;
+                    out[5] = -sx;
+                    out[6] = -sy * cz + cy * sx * sz;
+                    out[7] = sy * sz + cy * sx * cz;
+                    out[8] = cy * cx;
+                    return out;
+                };
+
+                const NOISE_IS_ZERO = NOISE < 1e-6;
+                const t0 = performance.now();
+
+                const startRAF = () => {
+                    if (this.raf) return;
+                    this.raf = requestAnimationFrame(render);
+                };
+                const stopRAF = () => {
+                    if (!this.raf) return;
+                    cancelAnimationFrame(this.raf);
+                    this.raf = 0;
+                };
+                this.startRAF = startRAF;
+                this.stopRAF = stopRAF;
+
+                const rnd = () => Math.random();
+                const wX = (0.3 + rnd() * 0.6) * RSX;
+                const wY = (0.2 + rnd() * 0.7) * RSY;
+                const wZ = (0.1 + rnd() * 0.5) * RSZ;
+                const phX = rnd() * Math.PI * 2;
+                const phZ = rnd() * Math.PI * 2;
+
+                let yaw = 0, pitch = 0, roll = 0;
+                let targetYaw = 0, targetPitch = 0;
+                const lerp = (a, b, t) => a + (b - a) * t;
+
+                const pointer = { x: 0, y: 0, inside: true };
+                const onMove = e => {
+                    const ww = Math.max(1, window.innerWidth);
+                    const wh = Math.max(1, window.innerHeight);
+                    const cx = ww * 0.5;
+                    const cy = wh * 0.5;
+                    pointer.x = Math.max(-1, Math.min(1, (e.clientX - cx) / (ww * 0.5)));
+                    pointer.y = Math.max(-1, Math.min(1, (e.clientY - cy) / (wh * 0.5)));
+                    pointer.inside = true;
+                };
+                const onLeave = () => { pointer.inside = false; };
+                const onBlur = () => { pointer.inside = false; };
+
+                this._onPointerMove = null;
+                this._onLeave = onLeave;
+                this._onBlur = onBlur;
+
+                if (p.animationType === 'hover') {
+                    this._onPointerMove = e => { onMove(e); startRAF(); };
+                    window.addEventListener('pointermove', this._onPointerMove, { passive: true });
+                    window.addEventListener('mouseleave', onLeave);
+                    window.addEventListener('blur', onBlur);
+                    program.uniforms.uUseBaseWobble.value = 0;
+                } else if (p.animationType === '3drotate') {
+                    program.uniforms.uUseBaseWobble.value = 0;
+                } else {
+                    program.uniforms.uUseBaseWobble.value = 1;
+                }
+
+                const render = (t) => {
+                    const time = (t - t0) * 0.001;
+                    program.uniforms.iTime.value = time;
+
+                    let continueRAF = true;
+
+                    if (p.animationType === 'hover') {
+                        const maxPitch = 0.6 * HOVSTR;
+                        const maxYaw = 0.6 * HOVSTR;
+                        targetYaw = (pointer.inside ? -pointer.x : 0) * maxYaw;
+                        targetPitch = (pointer.inside ? pointer.y : 0) * maxPitch;
+                        yaw = lerp(yaw, targetYaw, INERT);
+                        pitch = lerp(pitch, targetPitch, INERT);
+                        roll = lerp(roll, 0, 0.1);
+                        program.uniforms.uRot.value = setMat3FromEuler(yaw, pitch, roll, rotBuf);
+                        if (NOISE_IS_ZERO) {
+                            const settled = Math.abs(yaw - targetYaw) < 1e-4 &&
+                                Math.abs(pitch - targetPitch) < 1e-4 &&
+                                Math.abs(roll) < 1e-4;
+                            if (settled) continueRAF = false;
+                        }
+                    } else if (p.animationType === '3drotate') {
+                        const tScaled = time * TS;
+                        yaw = tScaled * wY;
+                        pitch = Math.sin(tScaled * wX + phX) * 0.6;
+                        roll = Math.sin(tScaled * wZ + phZ) * 0.5;
+                        program.uniforms.uRot.value = setMat3FromEuler(yaw, pitch, roll, rotBuf);
+                        if (TS < 1e-6) continueRAF = false;
+                    } else {
+                        rotBuf[0] = 1; rotBuf[1] = 0; rotBuf[2] = 0;
+                        rotBuf[3] = 0; rotBuf[4] = 1; rotBuf[5] = 0;
+                        rotBuf[6] = 0; rotBuf[7] = 0; rotBuf[8] = 1;
+                        program.uniforms.uRot.value = rotBuf;
+                        if (TS < 1e-6) continueRAF = false;
+                    }
+
+                    renderer.render({ scene: mesh });
+                    if (continueRAF) {
+                        this.raf = requestAnimationFrame(render);
+                    } else {
+                        this.raf = 0;
+                    }
+                };
+
+                startRAF();
+            }
+
+            dispose() {
+                this.stopRAF();
+                this.ro.disconnect();
+                if (this.props.animationType === 'hover') {
+                    if (this._onPointerMove) window.removeEventListener('pointermove', this._onPointerMove);
+                    window.removeEventListener('mouseleave', this._onLeave);
+                    window.removeEventListener('blur', this._onBlur);
+                }
+                const canvas = this.renderer.gl.canvas;
+                if (canvas.parentElement === this.container) {
+                    this.container.removeChild(canvas);
+                }
+            }
+
+            // Minimal WebGL helpers (replaces OGL dependency)
+            static _webgl() {
+                class Renderer {
+                    constructor({ dpr = 1, alpha = false, antialias = false } = {}) {
+                        const canvas = document.createElement('canvas');
+                        const gl = canvas.getContext('webgl2', { alpha, antialias, premultipliedAlpha: false });
+                        if (!gl) throw new Error('WebGL2 not supported');
+                        this.gl = gl;
+                        this.dpr = dpr;
+                    }
+                    setSize(w, h) {
+                        const d = this.dpr;
+                        this.gl.canvas.width = w * d;
+                        this.gl.canvas.height = h * d;
+                        this.gl.viewport(0, 0, w * d, h * d);
+                    }
+                    render({ scene }) {
+                        scene._draw();
+                    }
+                }
+
+                class Triangle {
+                    constructor(gl) {
+                        this.gl = gl;
+                        const buf = gl.createBuffer();
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+                        this.buffer = buf;
+                    }
+                }
+
+                class Program {
+                    constructor(gl, { vertex, fragment, uniforms = {} } = {}) {
+                        this.gl = gl;
+                        this.uniforms = uniforms;
+                        const vs = this._compile(gl, gl.VERTEX_SHADER, vertex);
+                        const fs = this._compile(gl, gl.FRAGMENT_SHADER, fragment);
+                        const prog = gl.createProgram();
+                        gl.attachShader(prog, vs);
+                        gl.attachShader(prog, fs);
+                        gl.linkProgram(prog);
+                        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+                            console.error('Program link error:', gl.getProgramInfoLog(prog));
+                        }
+                        this.program = prog;
+                        this._uLocs = {};
+                        for (const name in uniforms) {
+                            this._uLocs[name] = gl.getUniformLocation(prog, name);
+                        }
+                    }
+                    _compile(gl, type, src) {
+                        const s = gl.createShader(type);
+                        gl.shaderSource(s, src);
+                        gl.compileShader(s);
+                        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+                            console.error('Shader error:', gl.getShaderInfoLog(s));
+                        }
+                        return s;
+                    }
+                    _apply() {
+                        const gl = this.gl;
+                        gl.useProgram(this.program);
+                        for (const name in this.uniforms) {
+                            const loc = this._uLocs[name];
+                            if (!loc) continue;
+                            const v = this.uniforms[name].value;
+                            if (v instanceof Float32Array) {
+                                if (v.length === 2) gl.uniform2fv(loc, v);
+                                else if (v.length === 9) gl.uniformMatrix3fv(loc, false, v);
+                            } else if (typeof v === 'number') {
+                                if (Number.isInteger(v) && (name === 'uUseBaseWobble')) {
+                                    gl.uniform1i(loc, v);
+                                } else {
+                                    gl.uniform1f(loc, v);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                class Mesh {
+                    constructor(gl, { geometry, program }) {
+                        this.gl = gl;
+                        this.geometry = geometry;
+                        this.program = program;
+                        this.vao = gl.createVertexArray();
+                        gl.bindVertexArray(this.vao);
+                        gl.bindBuffer(gl.ARRAY_BUFFER, geometry.buffer);
+                        const posLoc = gl.getAttribLocation(program.program, 'position');
+                        gl.enableVertexAttribArray(posLoc);
+                        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+                        gl.bindVertexArray(null);
+                    }
+                    _draw() {
+                        const gl = this.gl;
+                        this.program._apply();
+                        gl.bindVertexArray(this.vao);
+                        gl.drawArrays(gl.TRIANGLES, 0, 3);
+                    }
+                }
+
+                return { Renderer, Triangle, Program, Mesh };
+            }
+        }
+
+        // Initialize Prism on page load
+        let prismInitialized = false;
+
+        function initPrism() {
+            if (prismInitialized) return;
+            prismInitialized = true;
+
+            const heroContainer = document.getElementById('magic-rings-hero');
+            if (heroContainer && !heroContainer.querySelector('canvas')) {
+                new Prism(heroContainer);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initPrism();
+        });
+
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            setTimeout(() => { initPrism(); }, 0);
+        }
+    </script>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // Circular Gallery - Infinite Loop Implementation
+        class SimpleCircularGallery {
+            constructor(container, items) {
+                this.container = container;
+                this.track = container.querySelector('#gallery-track');
+                this.originalItems = items;
+                // Triple the items: [copy | originals | copy]
+                // Start in the middle set so items exist on BOTH sides before any reset
+                this.items = [...items, ...items, ...items];
+                this.bufferSize = items.length; // = 10
+                this.currentIndex = this.bufferSize; // Start at index 10 (first original Bia)
+                this.isDragging = false;
+                this.startX = 0;
+                this.currentX = 0;
+                this.lastX = 0;
+                this.velocity = 0;
+                this.itemWidth = 204; // 180px image + 24px gap (1.5rem)
+                this.autoScrollTimer = null;
+                this.isResetting = false; // Flag to prevent update during reset
+
+                this.init();
+            }
+
+            init() {
+                this.renderItems();
+                this.addEventListeners();
+                this.currentX = 0;
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    this.updateView();
+                    // Start auto-scroll
+                    this.startAutoScroll();
+                }, 100);
+            }
+
+            renderItems() {
+                this.items.forEach((item) => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" loading="lazy">
+                        <div class="gallery-item-label">
+                            <span class="gallery-item-name">${item.name}</span>
+                            <span class="gallery-item-platform">${item.platform}</span>
+                            <span class="gallery-item-year">${item.year}</span>
+                        </div>
+                    `;
+                    this.track.appendChild(galleryItem);
+                });
+            }
+
+            addEventListeners() {
+                this.container.addEventListener('mousedown', (e) => this.onDragStart(e));
+                this.container.addEventListener('mousemove', (e) => this.onDragMove(e));
+                this.container.addEventListener('mouseup', () => this.onDragEnd());
+                this.container.addEventListener('mouseleave', () => this.onDragEnd());
+                this.container.addEventListener('wheel', (e) => this.onWheel(e), { passive: false });
+
+                // Touch events
+                this.container.addEventListener('touchstart', (e) => this.onDragStart(e));
+                this.container.addEventListener('touchmove', (e) => this.onDragMove(e));
+                this.container.addEventListener('touchend', () => this.onDragEnd());
+            }
+
+            onDragStart(e) {
+                this.isDragging = true;
+                this.startX = e.clientX || e.touches[0].clientX;
+                this.lastX = this.startX;
+                clearInterval(this.autoScrollTimer);
+            }
+
+            onDragMove(e) {
+                if (!this.isDragging) return;
+                const x = e.clientX || e.touches[0].clientX;
+                this.currentX = x - this.startX;
+                this.velocity = x - this.lastX;
+                this.lastX = x;
+                this.updateView(false); // Don't reset position during drag
+            }
+
+            onDragEnd() {
+                if (!this.isDragging) return;
+                this.isDragging = false;
+
+                // Snap to nearest item based on velocity
+                if (Math.abs(this.velocity) > 5) {
+                    const direction = this.velocity > 0 ? -1 : 1;
+                    this.currentIndex = this.currentIndex + direction;
+                } else if (Math.abs(this.currentX) > this.itemWidth / 3) {
+                    const direction = this.currentX > 0 ? -1 : 1;
+                    this.currentIndex = this.currentIndex + direction;
+                }
+
+                this.currentX = 0;
+                this.updateView();
+                clearInterval(this.autoScrollTimer);
+                this.startAutoScroll();
+            }
+
+            onWheel(e) {
+                e.preventDefault();
+                const direction = e.deltaY > 0 ? 1 : -1;
+                this.currentIndex = this.currentIndex + direction;
+
+                this.currentX = 0;
+                this.updateView();
+                clearInterval(this.autoScrollTimer);
+                this.startAutoScroll();
+            }
+
+            startAutoScroll() {
+                this.autoScrollTimer = setInterval(() => {
+                    if (!this.isDragging) {
+                        this.currentIndex++;
+                        this.updateView();
+                    }
+                }, 4000);
+            }
+
+            updateView(allowReset = true) {
+                // Center the active item in the viewport
+                const containerWidth = this.container.offsetWidth;
+                const centerOffset = (containerWidth / 2) - (this.itemWidth / 2);
+                const offset = centerOffset - (this.currentIndex * this.itemWidth) + this.currentX;
+                this.track.style.transform = `translateX(${offset}px)`;
+
+                // Update active state based on current index
+                const galleryItems = this.track.querySelectorAll('.gallery-item');
+                galleryItems.forEach((item, index) => {
+                    item.classList.toggle('active', index === this.currentIndex);
+                });
+
+                if (allowReset && !this.isResetting) {
+                    let newIndex = null;
+                    if (this.currentIndex >= 2 * this.bufferSize) {
+                        newIndex = this.currentIndex - this.bufferSize; // reset forward
+                    } else if (this.currentIndex < this.bufferSize) {
+                        newIndex = this.currentIndex + this.bufferSize; // reset backward
+                    }
+
+                    if (newIndex !== null) {
+                        this.isResetting = true;
+
+                        const doReset = () => {
+                            const w = this.container.offsetWidth;
+                            const co = (w / 2) - (this.itemWidth / 2);
+                            this.track.style.transition = 'none';
+                            this.currentIndex = newIndex;
+                            this.track.style.transform = `translateX(${co - newIndex * this.itemWidth}px)`;
+                            // Disable item transitions so active state switches instantly (no flicker)
+                            const allItems = this.track.querySelectorAll('.gallery-item');
+                            allItems.forEach(item => item.style.transition = 'none');
+                            allItems.forEach((item, index) => {
+                                item.classList.toggle('active', index === this.currentIndex);
+                            });
+                            void this.track.offsetHeight; // commit snap before re-enabling transitions
+                            allItems.forEach(item => item.style.transition = '');
+                            this.track.style.transition = 'transform 0.4s ease-out';
+                            this.isResetting = false;
+                        };
+
+                        // Use transitionend to reset exactly when the animation finishes,
+                        // with a 600ms fallback in case the event doesn't fire
+                        let handled = false;
+                        const fallback = setTimeout(() => {
+                            if (!handled) {
+                                handled = true;
+                                this.track.removeEventListener('transitionend', onEnd);
+                                doReset();
+                            }
+                        }, 600);
+
+                        const onEnd = (e) => {
+                            if (e.target !== this.track) return; // ignore bubbled events from child items
+                            if (e.propertyName !== 'transform') return;
+                            if (!handled) {
+                                handled = true;
+                                clearTimeout(fallback);
+                                this.track.removeEventListener('transitionend', onEnd);
+                                doReset();
+                            }
+                        };
+
+                        this.track.addEventListener('transitionend', onEnd);
+                    }
+                }
+            }
+
+        }
+
+        // Initialize gallery
+        function initGallery() {
+            const galleryContainer = document.getElementById('circular-gallery');
+            if (!galleryContainer) return;
+
+            const items = [
+                { image: './game_covers/1_bia_ps2_cover.jpg', name: 'Brothers in Arms: Road to Hill 30', platform: 'PS2', year: '2005' },
+                { image: './game_covers/2_gr3_xbox_cover.jpg', name: "Tom Clancy's Ghost Recon Advanced Warfighter", platform: 'XBOX', year: '2007' },
+                { image: './game_covers/3_gr3_ps2_cover.jpg', name: "Tom Clancy's Ghost Recon Advanced Warfighter", platform: 'PS2', year: '2007' },
+                { image: './game_covers/4_endwar_cover.jpg', name: "Tom Clancy's EndWar", platform: 'PS3/XBOX360/PC', year: '2008' },
+                { image: './game_covers/5_beowulf_psp_cover.jpg', name: 'Beowulf: The Game', platform: 'PSP', year: '2007' },
+                { image: './game_covers/6_avatar_game_cover.jpg', name: "James Cameron's Avatar: The Game", platform: 'Wii', year: '2009' },
+                { image: './game_covers/7_sc5_xbox360_cover.jpeg', name: "Tom Clancy's Splinter Cell: Conviction", platform: 'XBOX360/PC', year: '2010' },
+                { image: './game_covers/8_r6siege_ps4_cover.webp', name: "Tom Clancy's Rainbow Six Siege", platform: 'PS4/XBOX One/PC', year: '2015' },
+                { image: './game_covers/9_naraka_cover.jpg', name: 'Naraka: Bladepoint', platform: 'PC/XBOX One/PS5', year: '2021' },
+                { image: './game_covers/10_fragpunk_cover.jpeg', name: 'FragPunk', platform: 'PC/XBOX/PS5', year: '2025' }
+            ];
+
+            new SimpleCircularGallery(galleryContainer, items);
+        }
+
+        document.addEventListener('DOMContentLoaded', initGallery);
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            setTimeout(initGallery, 100);
+        }
+    </script>
+</body>
+</html>
